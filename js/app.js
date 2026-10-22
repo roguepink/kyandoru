@@ -1,32 +1,37 @@
-// 一灯 — 画面の動き(灯す・操作を出す/かくす・おやすみ・音楽・覚えておく)
+// one candle — 画面の動き(灯す・操作を出す/かくす・部屋・おやすみ・音楽・覚えておく)
 import { Scene } from './scene.js';
 import { Music } from './music.js';
 import { CANDLES, SIZES, SWAYS, WARMTH } from './candles.js';
+import { ROOMS } from './rooms.js';
 
 const $ = (id) => document.getElementById(id);
-const KEY = 'itto-v1';
+const KEY = 'onecandle-v1';
 const SLEEPS = [
   { min: 0, name: 'なし' }, { min: 5, name: '5分' }, { min: 10, name: '10分' }, { min: 15, name: '15分' }, { min: 30, name: '30分' },
-  { min: 40, name: 'お線香一本（40分）' }, { min: 60, name: '60分' }, { min: 90, name: '90分' },
+  { min: 45, name: '45分' }, { min: 60, name: '60分' }, { min: 90, name: '90分' },
 ];
 const TOUCH_TO_LIGHT = 'ふれると、灯がともります';
 
 // ---------- 覚えておく ----------
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const st = Object.assign(
-  { candle: 0, size: 1, sway: reduce ? 0 : 1, bright: 1, warm: 1, vol: 40, order: 'random', musicOn: false, track: 0, hints: 0 },
+  { candle: 0, room: -1, size: 1, sway: reduce ? 0 : 1, bright: 1, warm: 1, vol: 40, order: 'random', musicOn: false, track: 0, hints: 0, swipeHints: 0 },
   load()
 );
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+if (st.candle >= CANDLES.length) st.candle = 0;
+if (st.room >= ROOMS.length) st.room = -1;
+// 部屋: -1 は「おまかせ」(キャンドルに合う部屋)
+function roomOf(candle, room) { return room >= 0 ? room : Math.max(0, ROOMS.findIndex((r) => r.id === CANDLES[candle].room)); }
 
 // ---------- 場面 ----------
 let scene;
 try { scene = new Scene($('scene')); } catch (e) {
-  document.body.insertAdjacentHTML('beforeend', '<p class="hint on" style="top:40%">この端末では、ろうそくを描けませんでした。</p>');
+  document.body.insertAdjacentHTML('beforeend', '<p class="hint on" style="top:40%">この端末では、キャンドルを描けませんでした。</p>');
   throw e;
 }
-scene.set({ candle: st.candle, size: st.size, sway: st.sway, bright: st.bright, warm: st.warm });
+scene.set({ candle: st.candle, room: roomOf(st.candle, st.room), size: st.size, sway: st.sway, bright: st.bright, warm: st.warm });
 scene.fadeIn = 3.0;
 scene.fadeTarget = 0;
 scene.start();
@@ -65,7 +70,7 @@ function lightUp() {
   if (st.musicOn && music.tracks.length) music.play();
   if (st.hints < 3) {
     st.hints++; save();
-    const what = music.tracks.length ? 'ろうそくや音楽' : 'ろうそくや明るさ';
+    const what = 'キャンドルや部屋';
     setTimeout(() => { if (phase === 'lit' && !uiOn) showHint(`画面にふれると、${what}をえらべます`); }, 5000);
     setTimeout(hideHint, 10000);
   }
@@ -126,16 +131,23 @@ function hideUI(now) {
 }
 function bump() {
   clearTimeout(hideT);
-  hideT = setTimeout(() => hideUI(), sheet ? 15000 : 6000);
+  hideT = setTimeout(() => hideUI(), sheet ? 15000 : 10000);
 }
 function openSheet(id) {
   sheet = sheet === id ? null : id;
-  for (const s of ['pick', 'music', 'sleep', 'adjust']) $(s).hidden = s !== sheet;
+  for (const s of ['pick', 'room', 'music', 'sleep', 'adjust']) $(s).hidden = s !== sheet;
   document.querySelectorAll('#bar [data-open]').forEach((b) => b.classList.toggle('cur', b.dataset.open === sheet));
   const land = innerWidth > innerHeight && innerHeight <= 560;
   scene.shiftTo = !sheet ? [0, 0] : land ? [-0.2, 0] : [0, 0.14];
   if (sheet === 'pick') {
     const cur = $('thumbs').children[st.candle];
+    if (cur) cur.scrollIntoView({ block: 'center' });
+    // はらって変えられることを、はじめの3回だけ 知らせる
+    $('swipeNote').hidden = st.swipeHints >= 3;
+    if (st.swipeHints < 3) { st.swipeHints++; save(); }
+  }
+  if (sheet === 'room') {
+    const cur = $('rooms').children[st.room + 1];
     if (cur) cur.scrollIntoView({ block: 'center' });
   }
   if (uiOn) bump();
@@ -206,9 +218,35 @@ function changeCandle(i) {
   clearTimeout(switching);
   scene.fadeOut = 1.0; scene.fadeTarget = 1;
   switching = setTimeout(() => {
-    scene.set({ candle: i });
+    scene.set({ candle: i, room: roomOf(i, st.room) });
     scene.fadeIn = 2.0; scene.fadeTarget = 0;
   }, 1300);
+}
+
+// ---------- 部屋 ----------
+// 部屋を変えるときは、炎は そのまま。部屋だけ 1.2秒かけて暗くして、次の部屋を明るくする
+const roomsEl = $('rooms');
+[{ id: 'auto' }, ...ROOMS].forEach((r, k) => {
+  const i = k - 1;
+  const b = document.createElement('button');
+  b.innerHTML = i < 0
+    ? '<div class="omakase">おまかせ<br><small>キャンドルに<br>合う部屋</small></div><span>おまかせ</span>'
+    : `<img src="icons/room-${r.id}.jpg" alt="" loading="lazy"><span>${r.name}<small>${r.country}</small></span>`;
+  b.setAttribute('aria-label', i < 0 ? 'おまかせ' : `${r.name}(${r.country})`);
+  b.addEventListener('click', () => changeRoom(i));
+  roomsEl.appendChild(b);
+});
+let roomT = 0;
+function changeRoom(i) {
+  if (i === st.room) return;
+  const before = roomOf(st.candle, st.room);
+  st.room = i; save(); refreshChoices();
+  const r = roomOf(st.candle, i);
+  toast(i < 0 ? 'おまかせ' : `${ROOMS[r].name}・${ROOMS[r].country}`, 2400);
+  if (r === before) return;
+  clearTimeout(roomT);
+  scene.dimTarget = 1;
+  roomT = setTimeout(() => { scene.set({ room: r }); scene.dimTarget = 0; }, 1250);
 }
 
 // ---------- ととのえる ----------
@@ -239,6 +277,7 @@ function refreshChoices() {
     [...el.children].forEach((b, i) => b.setAttribute('aria-pressed', String(i === v)));
   });
   [...thumbs.children].forEach((b, i) => b.setAttribute('aria-pressed', String(i === st.candle)));
+  [...roomsEl.children].forEach((b, k) => b.setAttribute('aria-pressed', String(k - 1 === st.room)));
 }
 
 $('out').addEventListener('click', () => { if (phase === 'lit') putOut(false); });
@@ -253,7 +292,7 @@ function setSleep(i) {
   if (SLEEPS[i].min === 0) { clearSleep(); scene.shrink = 1; }
   else {
     sleepStart = Date.now(); sleepEnd = sleepStart + SLEEPS[i].min * 60000;
-    toast('おやすみ ' + SLEEPS[i].name.replace(/.*（(.*)）/, '$1'), 2200);
+    toast('おやすみ ' + SLEEPS[i].name, 2200);
     clearInterval(sleepWatch); sleepWatch = setInterval(sleepTick, 1000);
   }
   refreshLabels();
@@ -393,7 +432,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.se
 
 // テスト用(自動で確かめるとき)
 window.__itto = {
-  scene, music, st, lightUp, putOut, showUI, openSheet, setSleep, changeCandle, get phase() { return phase; },
+  scene, music, st, lightUp, putOut, showUI, openSheet, setSleep, changeCandle, changeRoom, get phase() { return phase; },
   sleepSecs(s) {
     sleepIdx = 1; musicFaded = false; burnFrom = scene.burn; sleepStart = Date.now(); sleepEnd = sleepStart + s * 1000;
     clearInterval(sleepWatch); sleepWatch = setInterval(sleepTick, 1000);

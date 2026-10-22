@@ -1,6 +1,7 @@
 // 炎の動き(ゆれ・息・風)を計算して、シェーダーに渡して描く。
 import { VERT, FRAG } from './shader.js';
 import { CANDLES, SIZES, SWAYS, BRIGHT, WARMTH, hexToLinear } from './candles.js';
+import { ROOMS, paintRoom } from './rooms.js';
 
 // なめらかな 1次元のノイズ(-1〜1)
 function h1(i) { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return (x - Math.floor(x)) * 2 - 1; }
@@ -64,9 +65,11 @@ export class Scene {
     this.init();
     // スマホで裏に回ったあと、描く仕組みが失われることがある → 戻ったら作りなおす
     canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); this.lost = true; });
-    canvas.addEventListener('webglcontextrestored', () => { this.lost = false; this.init(); this.resize(); });
+    canvas.addEventListener('webglcontextrestored', () => { this.lost = false; this.prog = null; this.init(); this.loadRoom(); this.resize(); });
     this.sim = new FlameSim();
-    this.opt = { candle: 0, size: 1, sway: 1, bright: 2, warm: 1 };
+    this.opt = { candle: 0, size: 1, sway: 1, bright: 2, warm: 1, room: 0 };
+    this.dim = 0; this.dimTarget = 0;   // 部屋だけ暗くする(部屋を変えるとき。炎は そのまま)
+    this.pop = 0; this.nextPop = 0;     // 木の芯の パチパチ
     this.cur = { bright: BRIGHT[2].exp, amb: BRIGHT[2].amb, warm: 0.5 };   // ゆっくり追いかける値
     this.burn = 1;            // 1 = 新しい / 小さいほど燃えて短い
     this.lit = 0; this.litTarget = 0;
@@ -89,26 +92,51 @@ export class Scene {
     const gl = this.canvas.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power' });
     if (!gl) throw new Error('webgl');
     this.gl = gl;
-    const prog = gl.createProgram();
-    for (const [type, src] of [[gl.VERTEX_SHADER, VERT], [gl.FRAGMENT_SHADER, FRAG]]) {
-      const s = gl.createShader(type);
-      gl.shaderSource(s, src); gl.compileShader(s);
-      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-      gl.attachShader(prog, s);
-    }
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
-    gl.useProgram(prog);
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    const loc = gl.getAttribLocation(prog, 'aPos');
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    this.u = {};
-    const n = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS);
-    for (let i = 0; i < n; i++) { const a = gl.getActiveUniform(prog, i); this.u[a.name] = gl.getUniformLocation(prog, a.name); }
+    this.progs = {};
+    this.tex = [gl.createTexture(), gl.createTexture()];
+    this.roomLoaded = -1;
+  }
 
+  // キャンドルと部屋に 要る部分だけで 描く仕組みを作る(全部入りだと スマホが 読みこめないため)。作ったものは 覚えておく
+  defines() {
+    const c = CANDLES[this.opt.candle], r = ROOMS[this.opt.room];
+    const d = {
+      HOLD: c.holder.kind, COVER: c.cover ? c.cover.kind : 0, BALL: c.body.flare < 0 ? 1 : 0, DECO: c.deco || 0,
+      TEA: c.type === 1 ? 1 : 0, WOOD: c.wick.kind === 2 ? 1 : 0, MULTI: c.multi ? 1 : 0, SURF: r.surf.kind,
+    };
+    return d;
+  }
+  useProgram() {
+    const d = this.defines(), key = JSON.stringify(d);
+    if (this.prog && this.prog.key === key) return this.prog;
+    let pr = this.progs[key];
+    if (!pr) {
+      const gl = this.gl, prog = gl.createProgram();
+      const head = Object.entries(d).map(([k, v]) => `#define ${k} ${v}`).join('\n') + '\n';
+      for (const [type, src] of [[gl.VERTEX_SHADER, VERT], [gl.FRAGMENT_SHADER, head + FRAG]]) {
+        const sh = gl.createShader(type);
+        gl.shaderSource(sh, src); gl.compileShader(sh);
+        if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS) && !gl.isContextLost()) throw new Error(gl.getShaderInfoLog(sh));
+        gl.attachShader(prog, sh);
+      }
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS) && !gl.isContextLost()) throw new Error(gl.getProgramInfoLog(prog));
+      gl.useProgram(prog);
+      const u = {};
+      const n = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS) || 0;
+      for (let i = 0; i < n; i++) { const a = gl.getActiveUniform(prog, i); u[a.name] = gl.getUniformLocation(prog, a.name); }
+      gl.uniform1i(u.uRoomA, 0); gl.uniform1i(u.uRoomB, 1);
+      pr = this.progs[key] = { key, prog, u, aPos: gl.getAttribLocation(prog, 'aPos') };
+    }
+    const gl = this.gl;
+    gl.useProgram(pr.prog);
+    gl.enableVertexAttribArray(pr.aPos);
+    gl.vertexAttribPointer(pr.aPos, 2, gl.FLOAT, false, 0, 0);
+    this.prog = pr; this.u = pr.u;
+    return pr;
   }
 
   resize() {
@@ -120,7 +148,26 @@ export class Scene {
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  set(o) { Object.assign(this.opt, o); }
+  set(o) { Object.assign(this.opt, o); if ('room' in o) this.loadRoom(); }
+
+  // 部屋の絵を描いて、シェーダーに渡す(小さくした絵も作っておき、ぼかしに使う)
+  loadRoom() {
+    const i = this.opt.room;
+    if (this.roomLoaded === i || this.lost) return;
+    const gl = this.gl, { A, B } = paintRoom(i);
+    [A, B].forEach((cv, k) => {
+      gl.activeTexture(gl.TEXTURE0 + k);
+      gl.bindTexture(gl.TEXTURE_2D, this.tex[k]);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.generateMipmap(gl.TEXTURE_2D);
+    });
+    this.roomLoaded = i;
+  }
 
   candleDims() {
     const c = CANDLES[this.opt.candle], sz = SIZES[this.opt.size];
@@ -142,10 +189,15 @@ export class Scene {
     const eff = 25 * Math.pow(top / 25, 0.5);   // 小さいろうそくも 拡大しすぎない(部屋の大きさを そろえる)
     let S = (portrait ? 0.56 : 0.62) * Hp / eff;
     S = Math.min(S, Hp * 0.12 / c.flame.h * 2.2, (portrait ? 0.55 : 0.38) * W / wide);
+    S = Math.min(S, Hp * 0.66 / top);   // 背の高いものも 画面に入るように
     // ろうそく(台から炎の先まで)の真ん中が、画面の高さの 46% あたりにくるように置く。
     // 背の高いろうそくは 下のほうへ(映り込みの見える所を せまく)、小さな灯は 今までどおり
     const baseY = Math.max(Hp * (portrait ? 0.17 : 0.13), Hp * 0.46 - top * S / 2);
-    return { S, ox: W / 2 + this.shift[0] * W, oy: baseY + this.shift[1] * Hp };
+    const oy = baseY + this.shift[1] * Hp;
+    // 台の奥のふち(この上が 部屋の絵)。キャンドルの台より 必ず奥
+    const line = Math.max(Hp * (portrait ? 0.30 : 0.24) + this.shift[1] * Hp, oy + Math.max(0.035 * Hp, 0.2 * (wide / 2 + 1.5) * S));
+    const Sb = Math.max(W / 3.0, (Hp - line) / 1.55);
+    return { S, ox: W / 2 + this.shift[0] * W, oy, line, Sb };
   }
 
   light() { this.litTarget = 1; this.smokeAge = -1; this.smokeStr = 0; }
@@ -204,12 +256,21 @@ export class Scene {
     const sk = Math.min(1, dt * 2.5);
     this.shift[0] += (this.shiftTo[0] - this.shift[0]) * sk;
     this.shift[1] += (this.shiftTo[1] - this.shift[1]) * sk;
+    const dk = dt / 1.2;
+    this.dim = this.dim < this.dimTarget ? Math.min(this.dimTarget, this.dim + dk) : Math.max(this.dimTarget, this.dim - dk * 0.8);
+    // 木の芯: ときどき パチッと 明るさが跳ねる(1秒に 0〜4回、ばらばら)
+    if (c.crackle) {
+      if (this.time >= this.nextPop) { this.pop = 0.6 + 0.4 * Math.random(); this.nextPop = this.time - Math.log(1 - Math.random()) / 1.4; }
+      this.pop = Math.max(0, this.pop - dt / 0.07);
+    } else this.pop = 0;
     if (this.fade < this.fadeTarget) this.fade = Math.min(this.fadeTarget, this.fade + dt / this.fadeOut);
     else if (this.fade > this.fadeTarget) this.fade = Math.max(this.fadeTarget, this.fade - dt / this.fadeIn);
   }
 
   draw() {
     if (this.lost) return;
+    if (this.roomLoaded !== this.opt.room) this.loadRoom();
+    this.useProgram();
     const gl = this.gl, u = this.u;
     const W = this.canvas.width, Hp = this.canvas.height;
     const d = this.candleDims(), c = d.c;
@@ -218,14 +279,16 @@ export class Scene {
     const lit = ease(this.lit);
     const hm = this.sim.hMul * mix(0.35, 1, this.shrink);
     const fh = d.fh * hm, fw = d.fw * (0.92 + 0.08 * hm) * (1 - 0.25 * Math.min(1, Math.abs(this.lean.lean0) * 2));
-    const poolY = c.holder.H + d.H - c.depth;
+    const hs = c.holder.kind === 0 && c.cover && c.cover.kind >= 5 ? SIZES[this.opt.size].body : 1;
+    const poolY = c.holder.H * hs + d.H - c.depth;
     let fbx = c.wick.curl * 0.7 + this.lean.lean0 * 0.2 * d.wl;
     let fby = poolY + d.wl * 0.55;
     if (c.flame.at) { fbx = d.Rt * c.flame.at.x + this.lean.lean0 * 0.1; fby = c.holder.H + d.H + c.flame.at.dy; }   // 灯明皿: 炎は ふちの芯から
     const lh = fh * mix(0.22, 1, lit);
     const lpx = fbx + (this.lean.lean0 * 0.4 + (this.lean.lean1 - this.lean.lean0) * 0.16) * lh;
     const lpy = fby + 0.4 * lh;
-    const I = 60 * Math.pow(hm, 0.5) * lit * (1 - 0.25 * Math.min(1, Math.abs(this.lean.lean0)));
+    const multi = c.multi ? 1.6 : 1;
+    const I = 60 * multi * Math.pow(hm, 0.5) * lit * (1 - 0.25 * Math.min(1, Math.abs(this.lean.lean0))) * (1 + 0.05 * this.pop);
 
     gl.uniform2f(u.uRes, W, Hp);
     gl.uniform1f(u.uTime, this.time);
@@ -241,17 +304,26 @@ export class Scene {
     gl.uniform2f(u.uFB, fbx, fby);
     gl.uniform2f(u.uLP, lpx, lpy);
     gl.uniform4f(u.uLight, I, this.cur.bright, this.cur.amb, this.cur.warm);
-    gl.uniform4f(u.uHold, c.holder.kind, c.holder.H, c.holder.R, c.holder.gloss);
+    gl.uniform4f(u.uHold, c.holder.kind, c.holder.H * hs, c.holder.R, c.holder.gloss);
     gl.uniform3fv(u.uHoldCol, hexToLinear(c.holder.color));
     const tipX = c.flame.at ? fbx : c.wick.curl, tipY = c.flame.at ? fby + 0.1 : poolY + d.wl * 0.95;
-    const m = c.motif || { kind: 0, size: 1, n: 0, leaf: 0, petal: '#000000', petal2: '#000000', leafC: '#000000' };
-    gl.uniform4f(u.uMotif, m.kind, m.size, m.n, m.leaf);
-    gl.uniform3fv(u.uPetal, hexToLinear(m.petal));
-    gl.uniform3fv(u.uPetal2, hexToLinear(m.petal2));
-    gl.uniform3fv(u.uLeafC, hexToLinear(m.leafC));
-    gl.uniform4f(u.uGold, c.gold || 0, 0, 0, 0);
+    gl.uniform3fv(u.uHoldCol2, hexToLinear(c.holder.color2 || c.holder.color));
+    const mu = c.multi;
+    gl.uniform4f(u.uMulti, mu ? mu.n : 1, mu ? mu.dx * SIZES[this.opt.size].body : 0, mu ? mu.back : 0, mu ? mu.front : 0);
+    const sz = SIZES[this.opt.size].body;
     const cv = c.cover || { kind: 0, R: 0, y0: 0, y1: 0, color: '#000000', frame: '#000000' };
-    gl.uniform4f(u.uCover, cv.kind, cv.R, cv.y0, cv.y1);
+    const cs = cv.kind >= 5 ? sz : 1;   // ガラスの器は キャンドルと いっしょに大きさが変わる
+    gl.uniform4f(u.uCover, cv.kind, cv.R * cs, cv.y0 * cs, cv.y1 * cs);
+    gl.uniform4f(u.uCoverP, cv.frost || 0, cv.tint || 0, (cv.water || 0) * cs, 0);
+    // 部屋
+    const room = ROOMS[this.opt.room], L = room.light, sf = room.surf;
+    gl.uniform4f(u.uBg, fr.Sb, fr.line, 60, 50);
+    gl.uniform4f(u.uRoomP, L.gain * (1 - this.dim), L.pool, L.win * (1 - this.dim), L.blur);
+    gl.uniform3fv(u.uRoomAmb, hexToLinear(L.amb).map((x) => x * (1 - this.dim)));
+    gl.uniform1f(u.uYJ, (fr.line - fr.oy) / fr.S);
+    gl.uniform4f(u.uSurf, sf.kind, sf.refl, sf.grain, sf.gloss);
+    gl.uniform3fv(u.uSurfCol, hexToLinear(sf.col).map((x) => x * (1 - this.dim)));
+    gl.uniform3fv(u.uSurfCol2, hexToLinear(sf.col2).map((x) => x * (1 - this.dim)));
     gl.uniform3fv(u.uCoverCol, hexToLinear(cv.color));
     gl.uniform3fv(u.uFrameCol, hexToLinear(cv.frame));
     gl.uniform4f(u.uSmoke, Math.max(0, this.smokeAge), this.smokeStr, tipX, tipY);

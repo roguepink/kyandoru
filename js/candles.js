@@ -41,7 +41,7 @@ export const CANDLES = [
     wax: '#efe6d3', trans: 0.85, pool: 0.78, depth: 0.6, deco: 0,
     wick: COTTON, flame: { h: 2.8, w: 0.45, tint: 0.05 }, breath: STILL,
     holder: { kind: 3, H: 1.5, R: 5.6, gloss: 0.3, color: '#4f3624' },
-    cover: { kind: 3, R: 6.6, y0: 1.5, y1: 30, color: '#e6ece8', frame: '#000000', frost: 0, tint: 0 },
+    cover: { kind: 3, R: 6.2, y0: 1.5, y1: 23, color: '#e6ece8', frame: '#000000', frost: 0, tint: 0 },
     calm: 0.35,
   },
   {
@@ -140,7 +140,7 @@ export const CANDLES = [
     id: 'woodwick', name: '木の芯のキャンドル', short: '木の芯', room: 'cabin', crackle: true,
     body: { H: 8, Rt: 4.2, Rb: 4.2, flare: 1 },
     wax: '#efe6d6', trans: 0.8, pool: 0.95, depth: 0.8, deco: 0,
-    wick: { len: 0.55, w: 1.6, curl: 0, kind: 2 }, flame: { h: 1.6, w: 1.35, tint: 0.15 }, breath: { amp: 0.03, freq: 0.2 },
+    wick: { len: 0.55, w: 1.6, curl: 0, kind: 2 }, flame: { h: 2.1, w: 0.95, tint: 0.3 }, breath: { amp: 0.03, freq: 0.2 },
     holder: { kind: 0, H: 0.7, R: 0, gloss: 0, color: '#000000' },
     cover: { kind: 5, R: 4.5, y0: 0, y1: 10, color: '#8a5a2b', frame: '#000000', frost: 0, tint: 0.55 },
     calm: 0.6,

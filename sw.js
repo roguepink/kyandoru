@@ -3,11 +3,9 @@
    - アプリの本体(下の FILES)は、はじめに全部覚える。開くときは まずネットで最新を取りにいき、3秒つながらなければ 覚えているものを出す。
    - 曲(music/)と文字の形(フォント)は、一度流した・表示したものだけ 覚えておく(10曲ぶん 先に全部はダウンロードしない)。
    FILES を変えたときは VERSION を1つ上げる。 */
-const VERSION = 'itto-v2';
-const FILES = ['./', 'index.html', 'css/app.css', 'js/app.js', 'js/scene.js', 'js/shader.js', 'js/candles.js', 'js/music.js',
-  'manifest.webmanifest', 'music/tracks.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
-  'icons/thumb-wa-shiro.jpg', 'icons/thumb-shu.jpg', 'icons/thumb-botan.jpg', 'icons/thumb-andon.jpg', 'icons/thumb-take.jpg', 'icons/thumb-kin.jpg', 'icons/thumb-wa-e.jpg', 'icons/thumb-bonbori.jpg', 'icons/thumb-kinari.jpg', 'icons/thumb-toumyou.jpg', 'icons/thumb-ume.jpg', 'icons/thumb-kiku.jpg', 'icons/thumb-teshoku.jpg', 'icons/thumb-hyakume.jpg', 'icons/thumb-ayame.jpg', 'icons/thumb-mame.jpg', 'icons/thumb-mitsurou.jpg', 'icons/thumb-tea.jpg', 'icons/thumb-hashira.jpg', 'icons/thumb-hosoi.jpg'];
-const KEEP = 'itto-keep';   // 曲とフォント(VERSION を上げても消さない)
+const VERSION = 'onecandle-v1';
+const FILES = ['./', 'index.html', 'css/app.css', 'js/app.js', 'js/scene.js', 'js/shader.js', 'js/candles.js', 'js/rooms.js', 'js/music.js', 'manifest.webmanifest', 'music/tracks.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/thumb-pillar.jpg', 'icons/thumb-glow.jpg', 'icons/thumb-hurricane.jpg', 'icons/thumb-taper.jpg', 'icons/thumb-dinner.jpg', 'icons/thumb-chamber.jpg', 'icons/thumb-rolled.jpg', 'icons/thumb-dipped.jpg', 'icons/thumb-twist.jpg', 'icons/thumb-ball.jpg', 'icons/thumb-altar.jpg', 'icons/thumb-tall.jpg', 'icons/thumb-votive.jpg', 'icons/thumb-lykta.jpg', 'icons/thumb-morocco.jpg', 'icons/thumb-woodwick.jpg', 'icons/thumb-threewick.jpg', 'icons/thumb-chianti.jpg', 'icons/thumb-float.jpg', 'icons/thumb-tealight.jpg', 'icons/thumb-s.jpg', 'icons/thumb-m.jpg', 'icons/thumb-l.jpg', 'icons/thumb-yuragi.jpg', 'icons/thumb-cool.jpg', 'icons/thumb-warm.jpg', 'icons/room-hygge.jpg', 'icons/room-winter.jpg', 'icons/room-paris.jpg', 'icons/room-library.jpg', 'icons/room-chapel.jpg', 'icons/room-toscana.jpg', 'icons/room-riad.jpg', 'icons/room-indigo.jpg', 'icons/room-hanok.jpg', 'icons/room-cabin.jpg'];
+const KEEP = 'onecandle-keep';   // 曲とフォント(VERSION を上げても消さない)
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
