@@ -40,9 +40,10 @@ button:focus-visible, input:focus-visible { outline: 1px solid var(--amber); out
   position: fixed; left: 0; right: 0; bottom: calc(18% + var(--sab)); margin: 0; text-align: center;
   font-size: 15px; color: var(--ink); opacity: 0; transition: opacity 1.6s var(--ease); pointer-events: none; padding: 0 24px;
 }
-.hint.on { opacity: 0.65; }
+.hint.on { opacity: 0.9; }
 .toast { bottom: auto; top: calc(14% + var(--sat)); font-size: 15px; letter-spacing: 0.3em; }
-.toast.on { opacity: 0.6; }
+.toast.on { opacity: 0.85; }
+.hint, .toast { text-shadow: 0 0 8px #000, 0 0 16px #000, 0 0 3px #000; }
 .relight {
   position: fixed; left: 50%; bottom: calc(20% + var(--sab)); transform: translateX(-50%);
   padding: 14px 28px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
@@ -63,10 +64,10 @@ body.nocursor { cursor: none; }
 }
 .bar button {
   flex: 1; min-width: 56px; max-width: 92px; min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  font-size: 11px; color: var(--ink); opacity: 0.85; letter-spacing: 0.04em;
+  font-size: 13px; color: var(--ink); opacity: 0.9; letter-spacing: 0.04em;
 }
-.bar button b { font-family: var(--en); font-weight: 500; font-size: 16px; letter-spacing: 0.06em; line-height: 1.1; margin-top: 3px; }
-.bar button span { color: var(--sub); }
+.bar button b { font-family: var(--en); font-weight: 500; font-size: 15px; letter-spacing: 0.06em; line-height: 1.1; margin-top: 3px; }
+.bar button span { color: var(--ink); opacity: 0.8; }
 .bar button.cur span { color: var(--amber); }
 .bar button.playing svg { color: var(--amber); }
 .bar button.cur { color: var(--amber); opacity: 1; }

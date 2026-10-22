@@ -38,7 +38,7 @@ export const ROOMS = [
     light: { gain: 1.1, pool: 34, win: 0.08, blur: 1.6, amb: '#c8ccdc' } },
   { id: 'hanok',   name: 'ハノク',       country: '韓国',
     surf: { kind: 6, col: '#8a6a3a', col2: '#6e5228', refl: 0.25, grain: 1.0, gloss: 0.45 },
-    light: { gain: 0.9, pool: 43, win: 0.10, blur: 1.5, amb: '#e8dcc0' } },
+    light: { gain: 0.9, pool: 43, win: 0.05, blur: 1.5, amb: '#e8dcc0' } },
   { id: 'cabin',   name: 'Log House',    country: 'アメリカ',
     surf: { kind: 0, col: '#6a4e32', col2: '#4c3420', refl: 0.08, grain: 0.8, gloss: 0.2 },
     light: { gain: 1.0, pool: 33, win: 0.0, blur: 1.5, amb: '#ffd2a0' } },
@@ -153,10 +153,10 @@ const PAINT = {
     // 白く塗った松の板張り(たての目地)
     P.rect('#8c857a', -1.6, 0, 1.6, 1.6);
     for (let u = -1.6; u < 1.6; u += 0.13) {
-      P.rect(jitter('#8c857a', r, 0.06), u, 0, u + 0.13, 1.6);
-      P.rect('rgba(40,30,20,0.35)', u, 0, u + 0.006, 1.6);
+      P.rect(jitter('#8c857a', r, 0.03), u, 0, u + 0.13, 1.6);
+      P.rect('rgba(40,30,20,0.22)', u, 0, u + 0.006, 1.6);
     }
-    P.streak(-1.6, 0, 1.6, 1.6, 0.05, 0.9, 0.35);
+    P.streak(-1.6, 0, 1.6, 1.6, 0.05, 0.9, 0.18);
     P.grain(-1.6, 0, 1.6, 1.6, 0.6, 0.25);
     // 腰の高さの 横板
     P.rect('#8a8376', -1.6, 0.0, 1.6, 0.05); P.rect('rgba(0,0,0,0.25)', -1.6, 0.05, 1.6, 0.058);
@@ -321,8 +321,8 @@ const PAINT = {
   toscana(P) {
     const r = P.r;
     // 黄土色の しっくい(ムラ)
-    P.rect('#8a5c3c', -1.6, 0, 1.6, 1.6);
-    P.grain(-1.6, 0, 1.6, 1.6, 1.2, 0.5);
+    P.rect('#b89a6a', -1.6, 0, 1.6, 1.6);
+    P.grain(-1.6, 0, 1.6, 1.6, 1.2, 0.35);
     P.grain(-1.6, 0, 1.6, 1.6, 0.25, 0.3);
     P.grain(-1.6, 0, 1.6, 1.6, 0.6, 0.18, 'multiply');
     for (let i = 0; i < 3; i++) {   // 細い ひび
@@ -333,7 +333,7 @@ const PAINT = {
     P.brect(0, 0, 0.75, -1.6, 0, 1.6, 1.6);
     // アーチ形の くぼみ(キャンドルが その中に入る)
     const niche = (g, w, top) => { g.moveTo(-w, 0); g.lineTo(-w, top - w); g.arc(0, top - w, w, Math.PI, 0, true); g.lineTo(w, 0); g.closePath(); };
-    P.fill('#6e4830', (g) => niche(g, 0.22, 0.98));
+    P.fill('#8a7048', (g) => niche(g, 0.22, 0.98));
     P.bfill(0, 0, 1, (g) => niche(g, 0.22, 0.98));
     P.grain(-0.22, 0, 0.22, 0.98, 0.3, 0.35, 'overlay', (g) => niche(g, 0.22, 0.98));
     // くぼみの ふちの影(左と上)
@@ -351,6 +351,9 @@ const PAINT = {
     P.fill('#8a4a2c', (g) => { g.moveTo(0.29, 0); g.bezierCurveTo(0.24, 0.06, 0.24, 0.17, 0.28, 0.21); g.lineTo(0.3, 0.24); g.lineTo(0.38, 0.24); g.lineTo(0.4, 0.21); g.bezierCurveTo(0.44, 0.17, 0.44, 0.06, 0.39, 0); g.closePath(); });
     P.roundShade(0.34, 0.1, 0, 0.24, 0.45);
     P.rect('#7a3e24', 0.295, 0.235, 0.385, 0.255);
+    // 天井ちかくの 木の梁
+    P.rect('#3a2616', -1.6, 1.3, 1.6, 1.44); P.streak(-1.6, 1.3, 1.6, 1.44, 0.8, 0.03, 0.35);
+    P.rect('rgba(0,0,0,0.35)', -1.6, 1.285, 1.6, 1.3);
     P.shade(-1.6, 0, 1.6, 0.2, 'rgba(0,0,0,0.25)', 'rgba(0,0,0,0)');
   },
 
@@ -397,9 +400,8 @@ const PAINT = {
     const r = P.r;
     // 藍色の 石灰の壁(ムラ)
     P.rect('#2c3450', -1.6, 0, 1.6, 1.6);
-    P.grain(-1.6, 0, 1.6, 1.6, 1.0, 0.45);
-    P.grain(-1.6, 0, 1.6, 1.6, 0.18, 0.3);
-    P.grain(-1.6, 0, 1.6, 1.6, 0.5, 0.2, 'screen');
+    P.grain(-1.6, 0, 1.6, 1.6, 1.0, 0.3);
+    P.grain(-1.6, 0, 1.6, 1.6, 0.18, 0.18);
     // 右: 木の格子窓(ジャリ)
     const u0 = 0.16, u1 = 0.46, v0 = 0.24, v1 = 1.2;
     P.rect('#3a2618', u0 - 0.04, v0 - 0.04, u1 + 0.04, v1 + 0.04);
@@ -434,7 +436,7 @@ const PAINT = {
       const u0 = doors[i] + 0.03, u1 = doors[i + 1] - 0.03;
       P.rect('#a89a80', u0, 0.2, u1, 1.6);
       P.grain(u0, 0.2, u1, 1.6, 0.12, 0.25);
-      P.brect(0.5, 0, 1, u0, 0.2, u1, 1.6);
+      P.brect(0.2, 0, 0.75, u0, 0.2, u1, 1.6);
       const cw = (u1 - u0) / 5, ch = 0.13;
       for (let k = 1; k < 5; k++) { P.rect('#3a2a1e', u0 + k * cw - 0.006, 0.2, u0 + k * cw + 0.006, 1.6); P.brect(0, 0, 1, u0 + k * cw - 0.006, 0.2, u0 + k * cw + 0.006, 1.6); }
       for (let v = 0.2 + ch; v < 1.6; v += ch) { P.rect('#3a2a1e', u0, v - 0.006, u1, v + 0.006); P.brect(0, 0, 1, u0, v - 0.006, u1, v + 0.006); }
@@ -464,10 +466,10 @@ const PAINT = {
     for (let v = 0; v < 1.6; v += lh) {
       const c = jitter('#5c4632', r, 0.12);
       P.rect(c, -1.6, v + 0.012, 1.6, v + lh - 0.012);
-      P.streak(-1.6, v + 0.012, 1.6, v + lh - 0.012, 0.9, 0.02, 0.45);
-      P.shade(-1.6, v + 0.012, 1.6, v + lh * 0.5, 'rgba(0,0,0,0.45)', 'rgba(0,0,0,0)');
+      P.streak(-1.6, v + 0.012, 1.6, v + lh - 0.012, 0.9, 0.02, 0.22);
+      P.shade(-1.6, v + 0.012, 1.6, v + lh * 0.5, 'rgba(0,0,0,0.25)', 'rgba(0,0,0,0)');
       P.shade(-1.6, v + lh * 0.5, 1.6, v + lh - 0.012, 'rgba(255,230,190,0.07)', 'rgba(0,0,0,0.3)');
-      P.rect('#8a7a62', -1.6, v, 1.6, v + 0.012);     // しっくいの すき間
+      P.rect('#6a5a46', -1.6, v, 1.6, v + 0.012);     // しっくいの すき間
       for (let k = 0; k < 3; k++) { const u = -1.5 + r() * 3; P.fill('rgba(30,20,10,0.5)', (g) => g.ellipse(u, v + lh * 0.5, 0.015, 0.012, 0, 0, Math.PI * 2)); }
     }
     // 木の棚と 木の釘(シェーカー様式)

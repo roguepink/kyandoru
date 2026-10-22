@@ -376,7 +376,7 @@ float holderR(float y){
     float base = min(1.6, Hh*0.12);
     if (y < 0.35) return R;
     if (y < base) return mix(R, 0.85, pow(smoothstep(0.35, base, y), 0.6));
-    float r = 0.55 + 0.18*exp(-pow((y - Hh*0.36)/(0.03*Hh + 0.2), 2.0)) + 0.24*exp(-pow((y - Hh*0.62)/(0.04*Hh + 0.2), 2.0))
+    float r = max(0.55, R*0.12) + 0.18*exp(-pow((y - Hh*0.36)/(0.03*Hh + 0.2), 2.0)) + 0.24*exp(-pow((y - Hh*0.62)/(0.04*Hh + 0.2), 2.0))
             + 0.1*exp(-pow((y - Hh*0.85)/0.3, 2.0));
     if (y > Hh - 1.3) r = mix(r, 1.9, smoothstep(Hh - 1.3, Hh - 0.9, y));
     if (y > Hh - 0.7) r = mix(1.9, 1.45, smoothstep(Hh - 0.7, Hh - 0.4, y));
@@ -590,7 +590,7 @@ vec4 body(vec2 p){
     float rib = 0.5 + 0.5*sin(u*42.0);
     float fres = pow(1.0 - nz, 2.0);
     vec3 alu = vec3(0.55, 0.55, 0.56);
-    float refl = 0.010 + 0.05*smoothstep(0.0, 1.0, y/H)*(0.5 + 0.5*nz) + fres*0.03;
+    float refl = 0.06 + 0.12*smoothstep(0.0, 1.0, y/H)*(0.5 + 0.5*nz) + fres*0.08;   // アルミ: つやのある銀
     side = alu*(refl*I*Lc*(0.7 + 0.3*rib)*1.6 + uLight.z*(0.4 + 0.3*rib));
     side += Lc*I*0.10*smoothstep(H - 0.25, H, y)*(0.6 + 0.4*rib);
   }
@@ -618,7 +618,7 @@ vec4 body(vec2 p){
     {
       // 巻いた蜜ろう: 六角の模様と、ななめの 巻き目
       float he = hexEdge(vec2(u, y)*2.4);
-      side *= 1.0 - 0.18*he;
+      side *= 1.0 - 0.38*he;
       float seam = smoothstep(0.08, 0.0, abs(fract((u + y*0.35)/(6.283*Ry)) - 0.5) - 0.47);
       side *= 1.0 - 0.3*seam;
     }
@@ -909,10 +909,10 @@ void main(){
       if (y < uHold.y && uHold.x > 0.5){ r = holderR(max(y, 0.0)); sc = uHoldCol*(Lc*I*0.08 + uLight.z) + Lc*I*0.03*uHold.w; }
       else { r = uCover.x > 4.5 ? glassR(clamp(y, uCover.z, uCover.w))*0.9 : radiusAt(clamp(y - uHold.y, 0.0, uBody.x)); sc = (uCover.x > 4.5 ? mix(uWax, uCoverCol, 0.5) : uWax)*Lc*I*0.9; }
       float top = uCover.x > 0.5 ? max(uCover.w, uHold.y + uBody.x) : uHold.y + uBody.x;
-      float a = smoothstep(r + blur, r - blur, abs(pm.x))*smoothstep(top + blur, top - blur, y)*step(0.0, y);
+      float a = (uCover.x > 4.5 ? 0.4 : 1.0)*smoothstep(r + blur, r - blur, abs(pm.x))*smoothstep(top + blur, top - blur, y)*step(0.0, y);
       vec3 rc = sc*a + flameGlow(pm + vec2((vnoise(vec2(p.y*1.5, uTime*0.5)) - 0.5)*0.08*dist, 0.0))*0.3*(1.0 - a*0.5) + halo(pm)*0.35;
-      float fall = exp(-dist/3.5);
-      float st = uSurf.y;
+      float fall = exp(-dist/(0.12*(uHold.y + uBody.x) + 1.0));
+      float st = uSurf.y*0.5;
       vec3 tint = SURF == 4 ? uSurfCol*2.5 : vec3(1.0);
       col = mix(col, col*0.7, a*0.3*fall*st);
       col += rc*0.35*fall*st*tint;
