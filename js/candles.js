@@ -1,205 +1,184 @@
-// ろうそくの顔ぶれ(20灯)。寸法は cm(大きさ「中」のとき)。
+// キャンドルの顔ぶれ(20)。寸法は cm(大きさ「中」のとき)。
 // 色は見た目の色(#rrggbb)。描くときに光の計算用の色に直す。
-// 2026-10-22: 専門家の案で最初の6灯 → ノブさんの希望で、日本で今売られている和ろうそく・和の灯りを中心に20灯へ。
-// 寸法・色は 和ろうそくの調べ(中村ローソク・会津絵ろうそく・高澤ろうそく など)をもとにした。
+// 2026-10-23: キャンドルの専門家の案(いま欧米で実際に売られ、使われているもの)。並びは「静か → 光の遊び → 小さく終わる」。
 //
 // 書き方:
-//   body   … H 高さ, Rt 上の半径, Rb 下の半径, flare 形(1 まっすぐ / 2以上 いかり型: 上がひらく)
-//   deco   … 0 なし / 1 絵(motif) / 2 蜂の巣
-//   motif  … kind 1椿 2桜 3梅 4菊 5牡丹 6あやめ, size 花の大きさ, n 花の数(〜6), leaf 葉や枝, petal/petal2/leafC 色
-//   gold   … 金箔の量(0〜1)
-//   type   … 0 ろうそく / 1 アルミの器(ティーライト) / 2 灯明皿(油と灯芯)
-//   holder … kind 0なし 1燭台(鉄・漆・木) 2真鍮の燭台 3皿, H 高さ, R 台座の半径, gloss つや, color
-//   cover  … kind 1行灯 2雪洞 3ほや(ガラス) 4竹あかり, R 半径, y0 下, y1 上, color 紙・ガラス・竹, frame 枠
-//   calm   … 風の当たりにくさ(かさの中は 揺れが小さい)、flick … ちらつきを足す
+//   body   … H 高さ, Rt 上の半径, Rb 下の半径, flare 形(1 まっすぐ / -1 球: Rb が球の半径、H は上を平らに切った高さ)
+//   deco   … 0 なし / 2 巻いた蜜ろう(六角) / 3 ねじれ / 5 まだら
+//   type   … 0 キャンドル / 1 アルミの器(ティーライト)
+//   wick   … len 長さ, w 太さ, curl 曲がり, kind 0 綿 / 2 木(平たい)
+//   flame  … h 高さ, w 半幅, tint 0 黄色〜1 だいだい
+//   holder … kind 0なし(H だけ上げる) 1燭台(鉄・木) 2金属の燭台 3皿 4ワインのびん 5手持ちの燭台, H 高さ, R 台座の半径, gloss つや, color, color2
+//   cover  … kind 1北欧のランタン 3ガラスの風よけ 4モロッコの透かし 5ガラスの器 6ガラスの鉢, R 半径, y0 下, y1 上, color, frame 枠,
+//             frost くもり(0〜1), tint 色の濃さ(0〜1), water 水の高さ
+//   calm   … 風の当たりにくさ(ガラスの中は 揺れが小さい) / multi … 芯が3本 / crackle … 木の芯のパチパチ(明るさだけ)
+//   room   … 「おまかせ」のときの部屋
 
-const WARO = { flare: 2.4 };                       // いかり型
-const IRON = { kind: 1, H: 6.0, R: 3.0, gloss: 0.5, color: '#2c2723' };
-const SHU_STAND = { kind: 1, H: 7.5, R: 4.2, gloss: 0.75, color: '#a8261c' };   // 朱漆の燭台
-const KURO_STAND = { kind: 1, H: 7.5, R: 4.2, gloss: 0.8, color: '#15110f' };   // 黒漆の燭台
-const BRASS = { kind: 2, H: 8.5, R: 4.0, gloss: 0.85, color: '#6e5527' };
-const WA_FLAME = { h: 7.5, w: 1.25, tint: 1.0 };
-const WA_WICK = { len: 2.0, w: 0.28, curl: 0.22, kind: 1 };
+const COTTON = { len: 1.0, w: 0.08, curl: 0.18, kind: 0 };
+const WEST = { h: 3.0, w: 0.42, tint: 0.05 };
+const STILL = { amp: 0.025, freq: 0.17 };
+const BRASS = { kind: 2, H: 15, R: 5.5, gloss: 0.85, color: '#7a5e2a' };
 
 export const CANDLES = [
   {
-    id: 'wa-shiro', name: '白の和ろうそく', short: '和ろうそく',
-    body: { H: 12, Rt: 1.0, Rb: 0.72, ...WARO },
-    wax: '#ede6d3', trans: 0.35, pool: 0.6, depth: 0.12, deco: 0,
-    wick: WA_WICK, flame: WA_FLAME,
-    breath: { amp: 0.10, freq: 0.12 },
-    holder: IRON,
+    id: 'pillar', name: 'ピラーキャンドル', short: 'ピラー', room: 'hygge',
+    body: { H: 10, Rt: 3.75, Rb: 3.75, flare: 1 },
+    wax: '#efe6d3', trans: 0.85, pool: 0.78, depth: 0.7, deco: 0,
+    wick: COTTON, flame: { h: 2.8, w: 0.45, tint: 0.05 }, breath: STILL,
+    holder: { kind: 3, H: 0.8, R: 5.0, gloss: 0.5, color: '#7d8083' },
   },
   {
-    id: 'shu', name: '朱ろうそく', short: '朱',
-    body: { H: 15, Rt: 1.6, Rb: 1.15, ...WARO },
-    wax: '#c8402a', trans: 0.3, pool: 0.6, depth: 0.15, deco: 0,
-    wick: { len: 2.1, w: 0.3, curl: -0.25, kind: 1 }, flame: { h: 7.2, w: 1.25, tint: 1.0 },
-    breath: { amp: 0.10, freq: 0.11 },
-    holder: SHU_STAND,
+    id: 'glow', name: '内から光るピラー', short: '内から光る', room: 'winter',
+    body: { H: 12, Rt: 5.0, Rb: 5.0, flare: 1 },
+    wax: '#f2ebdc', trans: 1.3, pool: 0.88, depth: 3.0, deco: 0,
+    wick: { len: 1.0, w: 0.08, curl: 0.16, kind: 0 }, flame: { h: 2.5, w: 0.45, tint: 0.05 }, breath: STILL,
+    holder: { kind: 3, H: 0.6, R: 6.2, gloss: 0.3, color: '#cdc5b8' },
+    calm: 0.6,
   },
   {
-    id: 'botan', name: '絵ろうそく・牡丹', short: '牡丹',
-    body: { H: 17, Rt: 1.9, Rb: 1.25, ...WARO },
-    wax: '#f3eedc', trans: 0.35, pool: 0.6, depth: 0.15, deco: 1,
-    motif: { kind: 5, size: 1.6, n: 2, leaf: 1, petal: '#c81e4e', petal2: '#ee8fb0', leafC: '#3f6b30' },
-    wick: { len: 2.2, w: 0.32, curl: 0.25, kind: 1 }, flame: { h: 7.8, w: 1.35, tint: 1.0 },
-    breath: { amp: 0.10, freq: 0.10 },
-    holder: KURO_STAND,
-  },
-  {
-    id: 'andon', name: '行灯', short: '行灯',
-    body: { H: 6, Rt: 0.55, Rb: 0.5, flare: 1 },
-    wax: '#f4efe0', trans: 0.6, pool: 0.6, depth: 0.1, deco: 0,
-    wick: { len: 1.2, w: 0.14, curl: 0.12, kind: 1 }, flame: { h: 4.2, w: 0.75, tint: 0.9 },
-    breath: { amp: 0.06, freq: 0.14 },
-    holder: { kind: 1, H: 4.0, R: 2.2, gloss: 0.4, color: '#1a1410' },
-    cover: { kind: 1, R: 6.5, y0: 1.4, y1: 19, color: '#f2e6cc', frame: '#1a1410' },
-    calm: 0.45,
-  },
-  {
-    id: 'take', name: '竹あかり', short: '竹あかり',
-    body: { H: 8, Rt: 0.9, Rb: 0.7, ...WARO },
-    wax: '#ede6d3', trans: 0.35, pool: 0.6, depth: 0.12, deco: 0,
-    wick: { len: 1.6, w: 0.22, curl: 0.2, kind: 1 }, flame: { h: 5.0, w: 0.9, tint: 1.0 },
-    breath: { amp: 0.08, freq: 0.12 },
-    holder: { kind: 0, H: 0, R: 0, gloss: 0, color: '#000000' },
-    cover: { kind: 4, R: 5.5, y0: 0, y1: 21, color: '#a89a5a', frame: '#000000' },
-    calm: 0.3,
-  },
-  {
-    id: 'kin', name: '金ろうそく', short: '金',
-    body: { H: 14, Rt: 1.6, Rb: 1.1, ...WARO },
-    wax: '#c79a3a', trans: 0.2, pool: 0.6, depth: 0.12, deco: 0, gold: 1.0,
-    wick: WA_WICK, flame: { h: 6.6, w: 1.15, tint: 1.0 },
-    breath: { amp: 0.10, freq: 0.12 },
-    holder: SHU_STAND,
-  },
-  {
-    id: 'wa-e', name: '絵ろうそく・椿', short: '椿',
-    body: { H: 12, Rt: 1.0, Rb: 0.72, ...WARO },
-    wax: '#a8321e', trans: 0.3, pool: 0.6, depth: 0.12, deco: 1,
-    motif: { kind: 1, size: 1.0, n: 2, leaf: 1, petal: '#e7ddc5', petal2: '#f0e8d4', leafC: '#3f592b' },
-    wick: { len: 2.0, w: 0.28, curl: -0.2, kind: 1 }, flame: WA_FLAME,
-    breath: { amp: 0.10, freq: 0.11 },
-    holder: IRON,
-  },
-  {
-    id: 'bonbori', name: '雪洞', short: '雪洞',
-    body: { H: 5, Rt: 0.55, Rb: 0.5, flare: 1 },
-    wax: '#f4efe0', trans: 0.6, pool: 0.6, depth: 0.1, deco: 0,
-    wick: { len: 1.2, w: 0.14, curl: 0.12, kind: 1 }, flame: { h: 4.0, w: 0.7, tint: 0.9 },
-    breath: { amp: 0.06, freq: 0.14 },
-    holder: { kind: 1, H: 9.5, R: 3.4, gloss: 0.75, color: '#a8261c' },
-    cover: { kind: 2, R: 5.6, y0: 9.8, y1: 22, color: '#f5ecd6', frame: '#a8261c' },
-    calm: 0.45,
-  },
-  {
-    id: 'kinari', name: '生成りのろうそく', short: '生成り',
-    body: { H: 14, Rt: 1.2, Rb: 1.0, flare: 1 },
-    wax: '#e6c46a', trans: 0.7, pool: 0.65, depth: 0.15, deco: 0,
-    wick: { len: 1.8, w: 0.26, curl: 0.2, kind: 1 }, flame: { h: 6.4, w: 1.05, tint: 0.95 },
-    breath: { amp: 0.08, freq: 0.12 },
-    holder: { kind: 3, H: 2.6, R: 4.0, gloss: 0.6, color: '#8c8470' },
-  },
-  {
-    id: 'toumyou', name: '灯明皿', short: '灯明皿', type: 2,
-    body: { H: 1.4, Rt: 4.0, Rb: 2.2, flare: 0.6 },
-    wax: '#b88a5e', trans: 0.1, pool: 0.86, depth: 0.35, deco: 0,
-    wick: { len: 0, w: 0.24, curl: 0, kind: 0 }, flame: { h: 2.4, w: 0.42, tint: 0.6, at: { x: 0.8, dy: 0.12 } },
-    breath: { amp: 0.04, freq: 0.3 },
-    holder: { kind: 1, H: 9.0, R: 3.2, gloss: 0.3, color: '#5a3a22' },
-    flick: 0.6,
-  },
-  {
-    id: 'ume', name: '絵ろうそく・梅', short: '梅',
-    body: { H: 15, Rt: 0.9, Rb: 0.8, flare: 1 },
-    wax: '#f4efe0', trans: 0.4, pool: 0.6, depth: 0.12, deco: 1,
-    motif: { kind: 3, size: 0.42, n: 6, leaf: 1, petal: '#c42a3c', petal2: '#d8506a', leafC: '#4a3426' },
-    wick: { len: 1.8, w: 0.24, curl: 0.18, kind: 1 }, flame: { h: 6.0, w: 1.0, tint: 1.0 },
-    breath: { amp: 0.09, freq: 0.13 },
-    holder: IRON,
-  },
-  {
-    id: 'kiku', name: '絵ろうそく・菊', short: '菊',
-    body: { H: 15, Rt: 1.35, Rb: 1.0, ...WARO },
-    wax: '#f3eedc', trans: 0.35, pool: 0.6, depth: 0.12, deco: 1,
-    motif: { kind: 4, size: 1.35, n: 1, leaf: 1, petal: '#e8b01e', petal2: '#9a6a10', leafC: '#2f5d2a' },
-    wick: WA_WICK, flame: { h: 6.6, w: 1.15, tint: 1.0 },
-    breath: { amp: 0.10, freq: 0.12 },
-    holder: KURO_STAND,
-  },
-  {
-    id: 'teshoku', name: '手燭(ガラスのほや)', short: '手燭',
-    body: { H: 9, Rt: 0.85, Rb: 0.8, flare: 1 },
-    wax: '#f1ecd8', trans: 0.5, pool: 0.6, depth: 0.12, deco: 0,
-    wick: { len: 1.5, w: 0.2, curl: 0.15, kind: 1 }, flame: { h: 5.0, w: 0.85, tint: 0.95 },
-    breath: { amp: 0.08, freq: 0.13 },
-    holder: { kind: 2, H: 4.0, R: 4.5, gloss: 0.85, color: '#7a5d2c' },
-    cover: { kind: 3, R: 2.9, y0: 3.6, y1: 18.5, color: '#dfe8e2', frame: '#000000' },
+    id: 'hurricane', name: 'ガラスの風よけ', short: '風よけ', room: 'cabin',
+    body: { H: 10, Rt: 3.5, Rb: 3.5, flare: 1 },
+    wax: '#efe6d3', trans: 0.85, pool: 0.78, depth: 0.6, deco: 0,
+    wick: COTTON, flame: { h: 2.8, w: 0.45, tint: 0.05 }, breath: STILL,
+    holder: { kind: 3, H: 1.5, R: 5.6, gloss: 0.3, color: '#4f3624' },
+    cover: { kind: 3, R: 6.6, y0: 1.5, y1: 30, color: '#e6ece8', frame: '#000000', frost: 0, tint: 0 },
     calm: 0.35,
   },
   {
-    id: 'hyakume', name: '百匁ろうそく', short: '百匁',
-    body: { H: 20, Rt: 3.3, Rb: 2.4, ...WARO },
-    wax: '#f1ecd8', trans: 0.35, pool: 0.6, depth: 0.2, deco: 0,
-    wick: { len: 2.8, w: 0.45, curl: 0.3, kind: 1 }, flame: { h: 11, w: 1.9, tint: 1.0 },
-    breath: { amp: 0.10, freq: 0.09 },
-    holder: { kind: 1, H: 8, R: 6.2, gloss: 0.85, color: '#6e5527' },
-  },
-  {
-    id: 'ayame', name: '絵ろうそく・あやめ', short: 'あやめ',
-    body: { H: 15, Rt: 1.0, Rb: 0.85, flare: 1 },
-    wax: '#f4efe0', trans: 0.4, pool: 0.6, depth: 0.12, deco: 1,
-    motif: { kind: 6, size: 0.72, n: 3, leaf: 1, petal: '#8a64c4', petal2: '#b39ae0', leafC: '#3c6e3a' },
-    wick: { len: 1.8, w: 0.24, curl: -0.18, kind: 1 }, flame: { h: 6.0, w: 1.0, tint: 1.0 },
-    breath: { amp: 0.09, freq: 0.13 },
+    id: 'taper', name: '真鍮の燭台', short: '真鍮', room: 'library',
+    body: { H: 25, Rt: 1.0, Rb: 1.1, flare: 1 },
+    wax: '#efe6cf', trans: 0.6, pool: 0.7, depth: 0.12, deco: 0,
+    wick: { len: 0.95, w: 0.07, curl: 0.16, kind: 0 }, flame: WEST, breath: STILL,
     holder: BRASS,
   },
   {
-    id: 'mame', name: '豆ろうそく', short: '豆',
-    body: { H: 8, Rt: 0.5, Rb: 0.45, flare: 1 },
-    wax: '#f4efe0', trans: 0.5, pool: 0.6, depth: 0.08, deco: 0,
-    wick: { len: 1.0, w: 0.12, curl: 0.12, kind: 1 }, flame: { h: 3.2, w: 0.55, tint: 0.8 },
-    breath: { amp: 0.05, freq: 0.2 },
-    holder: { kind: 3, H: 0.6, R: 3.0, gloss: 0.1, color: '#c9a27a' },
+    id: 'dinner', name: '銀の燭台', short: '銀', room: 'paris',
+    body: { H: 30, Rt: 1.1, Rb: 1.1, flare: 1 },
+    wax: '#f4f2ec', trans: 0.6, pool: 0.7, depth: 0.12, deco: 0,
+    wick: { len: 0.95, w: 0.07, curl: -0.16, kind: 0 }, flame: WEST, breath: STILL,
+    holder: { kind: 2, H: 18, R: 6.0, gloss: 0.9, color: '#9a9ea3' },
   },
   {
-    id: 'mitsurou', name: '蜜ろう', short: '蜜ろう',
-    body: { H: 9, Rt: 2.5, Rb: 2.5, flare: 1 },
-    wax: '#c98a3a', trans: 0.95, pool: 0.74, depth: 0.45, deco: 2,
-    wick: { len: 0.95, w: 0.085, curl: 0.2, kind: 0 },
-    flame: { h: 3.3, w: 0.5, tint: 0.25 },
-    breath: { amp: 0.03, freq: 0.2 },
-    holder: { kind: 3, H: 0.9, R: 3.9, gloss: 0.15, color: '#4a2e1c' },
+    id: 'chamber', name: '手持ちの燭台', short: '手持ち', room: 'hanok',
+    body: { H: 12, Rt: 1.1, Rb: 1.1, flare: 1 },
+    wax: '#f4f2ec', trans: 0.6, pool: 0.7, depth: 0.12, deco: 0,
+    wick: { len: 0.95, w: 0.07, curl: 0.15, kind: 0 }, flame: { h: 2.8, w: 0.42, tint: 0.05 }, breath: STILL,
+    holder: { kind: 5, H: 3.5, R: 7.0, gloss: 0.6, color: '#e2ddd3', color2: '#1f2a44' },
   },
   {
-    id: 'tea', name: '小さな灯（豆皿）', short: '小さな灯',
-    type: 1,
-    body: { H: 1.5, Rt: 1.95, Rb: 1.95, flare: 1 },
+    id: 'rolled', name: '巻いたみつろう', short: 'みつろう', room: 'winter',
+    body: { H: 20, Rt: 1.25, Rb: 1.25, flare: 1 },
+    wax: '#d9a441', trans: 0.6, pool: 0.7, depth: 0.15, deco: 2,
+    wick: { len: 1.1, w: 0.1, curl: 0.2, kind: 0 }, flame: { h: 3.5, w: 0.5, tint: 0.15 }, breath: { amp: 0.03, freq: 0.16 },
+    holder: { kind: 1, H: 4.0, R: 3.2, gloss: 0.3, color: '#5e4128' },
+  },
+  {
+    id: 'dipped', name: '手づくりのみつろう', short: '手づくり', room: 'cabin',
+    body: { H: 25, Rt: 0.85, Rb: 1.2, flare: 1 },
+    wax: '#c9963a', trans: 0.6, pool: 0.7, depth: 0.12, deco: 0,
+    wick: { len: 1.1, w: 0.09, curl: -0.2, kind: 0 }, flame: { h: 3.5, w: 0.5, tint: 0.15 }, breath: { amp: 0.03, freq: 0.16 },
+    holder: { kind: 1, H: 6.0, R: 3.0, gloss: 0.5, color: '#2b2622' },
+  },
+  {
+    id: 'twist', name: 'ねじりキャンドル', short: 'Twist', room: 'toscana',
+    body: { H: 25, Rt: 1.1, Rb: 1.1, flare: 1 },
+    wax: '#6e1a26', trans: 0.45, pool: 0.7, depth: 0.12, deco: 3,
+    wick: { len: 0.95, w: 0.07, curl: 0.16, kind: 0 }, flame: WEST, breath: STILL,
+    holder: { kind: 2, H: 12, R: 5.0, gloss: 0.6, color: '#76797c' },
+  },
+  {
+    id: 'ball', name: 'ボールキャンドル', short: 'Ball', room: 'paris',
+    body: { H: 7.4, Rt: 2.1, Rb: 4.0, flare: -1 },
+    wax: '#ede4cf', trans: 0.8, pool: 0.8, depth: 0.45, deco: 5,
+    wick: COTTON, flame: { h: 2.5, w: 0.42, tint: 0.05 }, breath: STILL,
+    holder: { kind: 3, H: 0.6, R: 4.6, gloss: 0.4, color: '#b8b0a2' },
+  },
+  {
+    id: 'altar', name: '祭壇のろうそく', short: '祭壇', room: 'chapel',
+    body: { H: 35, Rt: 3.0, Rb: 3.0, flare: 1 },
+    wax: '#f4eedd', trans: 0.9, pool: 0.72, depth: 0.5, deco: 0,
+    wick: { len: 1.2, w: 0.12, curl: 0.2, kind: 0 }, flame: { h: 3.5, w: 0.55, tint: 0.08 }, breath: STILL,
+    holder: { kind: 2, H: 30, R: 9.0, gloss: 0.85, color: '#7a5e2a' },
+  },
+  {
+    id: 'tall', name: '背の高いグラス', short: '高いグラス', room: 'indigo',
+    body: { H: 16, Rt: 2.75, Rb: 2.75, flare: 1 },
+    wax: '#f6f3ec', trans: 1.0, pool: 0.95, depth: 0.3, deco: 0,
+    wick: COTTON, flame: { h: 2.5, w: 0.4, tint: 0.05 }, breath: STILL,
+    holder: { kind: 0, H: 0.7, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 5, R: 3.05, y0: 0, y1: 20, color: '#dfe6e2', frame: '#000000', frost: 0.15, tint: 0 },
+    calm: 0.4,
+  },
+  {
+    id: 'votive', name: 'こはく色のグラス', short: 'こはく色', room: 'indigo',
+    body: { H: 5.2, Rt: 2.0, Rb: 2.0, flare: 1 },
+    wax: '#f3efe6', trans: 1.0, pool: 0.92, depth: 0.5, deco: 0,
+    wick: { len: 0.9, w: 0.07, curl: 0.15, kind: 0 }, flame: { h: 2.2, w: 0.38, tint: 0.05 }, breath: STILL,
+    holder: { kind: 0, H: 0.6, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 5, R: 2.4, y0: 0, y1: 7, color: '#c98b3a', frame: '#000000', frost: 0, tint: 0.6 },
+    calm: 0.45,
+  },
+  {
+    id: 'lykta', name: '北欧のランタン', short: 'ランタン', room: 'hygge',
+    body: { H: 8, Rt: 3.0, Rb: 3.0, flare: 1 },
+    wax: '#f1ece2', trans: 0.85, pool: 0.78, depth: 0.5, deco: 0,
+    wick: COTTON, flame: { h: 2.5, w: 0.42, tint: 0.05 }, breath: STILL,
+    holder: { kind: 0, H: 1.2, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 1, R: 5.0, y0: 1.2, y1: 22, color: '#e8eeee', frame: '#1e1e1e', frost: 0, tint: 0 },
+    calm: 0.4,
+  },
+  {
+    id: 'morocco', name: 'モロッコのランタン', short: 'モロッコ', room: 'riad', type: 1,
+    body: { H: 1.6, Rt: 1.9, Rb: 1.9, flare: 1 },
     wax: '#f2ede2', trans: 1.0, pool: 0.94, depth: 0.32, deco: 0,
-    wick: { len: 0.75, w: 0.06, curl: 0.12, kind: 0 },
-    flame: { h: 1.9, w: 0.33, tint: 0.0 },
-    breath: { amp: 0.02, freq: 0.25 },
-    holder: { kind: 3, H: 0.7, R: 3.5, gloss: 0.7, color: '#6b665c' },
+    wick: { len: 0.7, w: 0.06, curl: 0.12, kind: 0 }, flame: { h: 1.7, w: 0.32, tint: 0.0 }, breath: { amp: 0.02, freq: 0.25 },
+    holder: { kind: 0, H: 1.0, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 4, R: 6.0, y0: 0.6, y1: 16, color: '#7a5a28', frame: '#000000', frost: 0, tint: 0 },
+    calm: 0.5,
   },
   {
-    id: 'hashira', name: '白い柱のろうそく', short: '白い柱',
-    body: { H: 11, Rt: 3.75, Rb: 3.75, flare: 1 },
-    wax: '#e9e2d4', trans: 1.1, pool: 0.85, depth: 2.2, deco: 0,
-    wick: { len: 1.0, w: 0.075, curl: 0.18, kind: 0 },
-    flame: { h: 2.9, w: 0.5, tint: 0.0 },
-    breath: { amp: 0.02, freq: 0.2 },
-    holder: { kind: 0, H: 0, R: 0, gloss: 0, color: '#000000' },
+    id: 'woodwick', name: '木の芯のキャンドル', short: '木の芯', room: 'cabin', crackle: true,
+    body: { H: 8, Rt: 4.2, Rb: 4.2, flare: 1 },
+    wax: '#efe6d6', trans: 0.8, pool: 0.95, depth: 0.8, deco: 0,
+    wick: { len: 0.55, w: 1.6, curl: 0, kind: 2 }, flame: { h: 1.6, w: 1.35, tint: 0.15 }, breath: { amp: 0.03, freq: 0.2 },
+    holder: { kind: 0, H: 0.7, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 5, R: 4.5, y0: 0, y1: 10, color: '#8a5a2b', frame: '#000000', frost: 0, tint: 0.55 },
+    calm: 0.6,
   },
   {
-    id: 'hosoi', name: '細いろうそく', short: '細いろうそく',
-    body: { H: 17, Rt: 1.05, Rb: 1.15, flare: 1 },
-    wax: '#efe6d6', trans: 0.9, pool: 0.7, depth: 0.12, deco: 0,
-    wick: { len: 0.9, w: 0.07, curl: 0.16, kind: 0 },
-    flame: { h: 3.4, w: 0.45, tint: 0.05 },
-    breath: { amp: 0.02, freq: 0.2 },
-    holder: BRASS,
+    id: 'threewick', name: '3つの炎のジャー', short: '3つの炎', room: 'library',
+    body: { H: 8, Rt: 4.7, Rb: 4.7, flare: 1 },
+    wax: '#f2eee6', trans: 0.8, pool: 0.95, depth: 1.0, deco: 0,
+    wick: COTTON, flame: { h: 2.5, w: 0.4, tint: 0.05 }, breath: STILL,
+    holder: { kind: 0, H: 0.7, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 5, R: 5.0, y0: 0, y1: 10, color: '#e8e2d8', frame: '#000000', frost: 0.75, tint: 0 },
+    multi: { n: 3, dx: 1.7, back: 0.28, front: 0.36 },
+    calm: 0.7,
+  },
+  {
+    id: 'chianti', name: 'ワインのびん', short: 'ワインのびん', room: 'toscana',
+    body: { H: 18, Rt: 1.1, Rb: 1.1, flare: 1 },
+    wax: '#f2eee6', trans: 0.6, pool: 0.7, depth: 0.12, deco: 0,
+    wick: { len: 0.95, w: 0.07, curl: 0.16, kind: 0 }, flame: WEST, breath: STILL,
+    holder: { kind: 4, H: 24, R: 6.5, gloss: 0.9, color: '#1f3a1e', color2: '#b8955a' },
+  },
+  {
+    id: 'float', name: '水にうかぶキャンドル', short: '水にうかぶ', room: 'hanok',
+    body: { H: 2.5, Rt: 3.0, Rb: 2.7, flare: 1 },
+    wax: '#f7f5f0', trans: 0.9, pool: 0.85, depth: 0.3, deco: 0,
+    wick: { len: 0.9, w: 0.07, curl: 0.12, kind: 0 }, flame: { h: 2.0, w: 0.38, tint: 0.05 }, breath: STILL,
+    holder: { kind: 0, H: 4.0, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 6, R: 9.0, y0: 0, y1: 7.5, color: '#dfe8e6', frame: '#000000', frost: 0, tint: 0, water: 5.0 },
+    calm: 0.6,
+  },
+  {
+    id: 'tealight', name: 'ガラスのティーライト', short: 'ティーライト', room: 'riad', type: 1,
+    body: { H: 1.6, Rt: 1.9, Rb: 1.9, flare: 1 },
+    wax: '#f2ede2', trans: 1.0, pool: 0.94, depth: 0.32, deco: 0,
+    wick: { len: 0.7, w: 0.06, curl: 0.12, kind: 0 }, flame: { h: 1.6, w: 0.3, tint: 0.0 }, breath: { amp: 0.02, freq: 0.25 },
+    holder: { kind: 0, H: 0.8, R: 0, gloss: 0, color: '#000000' },
+    cover: { kind: 5, R: 2.3, y0: 0, y1: 5, color: '#e4ebe8', frame: '#000000', frost: 0, tint: 0 },
+    calm: 0.5,
   },
 ];
 
@@ -209,11 +188,11 @@ export const SIZES = [
   { id: 'l', name: '大', body: 1.22, flame: 1.1 },
 ];
 
-// ゆれの3段階。lean = 炎の傾き(高さに対する横ずれの割合)
+// ゆれの3段階。lean = 炎の傾き(高さに対する横ずれの割合)。洋ろうそくは 和ろうそくより しずか
 export const SWAYS = [
-  { id: 'calm',   name: 'しずか', lean: 0.035, height: 0.04, gustEvery: [40, 120], gust: 0.08, flick: 0.0 },
-  { id: 'yuragi', name: 'ゆらぎ', lean: 0.10,  height: 0.09, gustEvery: [10, 30],  gust: 0.26, flick: 0.25 },
-  { id: 'soyo',   name: 'そよ風', lean: 0.18,  height: 0.18, gustEvery: [5, 14],   gust: 0.32, flick: 0.7 },
+  { id: 'calm',   name: 'しずか', lean: 0.03, height: 0.03, gustEvery: [60, 180], gust: 0.07, flick: 0.0 },
+  { id: 'yuragi', name: 'ゆらぎ', lean: 0.08, height: 0.06, gustEvery: [15, 45],  gust: 0.22, flick: 0.2 },
+  { id: 'soyo',   name: 'そよ風', lean: 0.16, height: 0.14, gustEvery: [5, 14],   gust: 0.3,  flick: 0.6 },
 ];
 
 // 明るさ5段階: 露出と、部屋のうす明かり
