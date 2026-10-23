@@ -1,1 +1,52 @@
-[]
+[
+ {
+  "file": "01-stille-lys.mp3",
+  "title": "静かな灯",
+  "lang": "デンマーク語"
+ },
+ {
+  "file": "02-vinterljus.mp3",
+  "title": "冬のあかり",
+  "lang": "スウェーデン語"
+ },
+ {
+  "file": "03-petite-flamme.mp3",
+  "title": "小さな炎",
+  "lang": "フランス語"
+ },
+ {
+  "file": "04-candlelight.mp3",
+  "title": "Candlelight",
+  "lang": "英語"
+ },
+ {
+  "file": "05-kerzenschein.mp3",
+  "title": "ゆらめき",
+  "lang": "ドイツ語"
+ },
+ {
+  "file": "06-piccola-luce.mp3",
+  "title": "やさしい光",
+  "lang": "イタリア語"
+ },
+ {
+  "file": "07-lucecita.mp3",
+  "title": "ほのかな灯",
+  "lang": "スペイン語"
+ },
+ {
+  "file": "08-nour.mp3",
+  "title": "やすらぎ",
+  "lang": "アラビア語"
+ },
+ {
+  "file": "09-diya.mp3",
+  "title": "祈りの灯",
+  "lang": "ヒンディー語"
+ },
+ {
+  "file": "10-jageun-bulbit.mp3",
+  "title": "小さな灯り",
+  "lang": "韓国語"
+ }
+]
