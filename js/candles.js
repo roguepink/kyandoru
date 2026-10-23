@@ -7,7 +7,7 @@ export const CANDLES = [
   { id: 'glow', name: '内から光るピラー', short: '内から光る', place: 'スウェーデン', tip: [0.5042, 0.607], smoke: true },
   { id: 'hurricane', name: 'ガラスの風よけ', short: '風よけ', place: 'アメリカ', tip: [0.5021, 0.4779], smoke: true },
   { id: 'taper', name: '真鍮の燭台', short: '真鍮', place: 'イギリス', tip: [0.4986, 0.4055], smoke: true },
-  { id: 'dinner', name: '銀の燭台', short: '銀', place: 'フランス', tip: [0.4986, 0.3859], smoke: true },
+  { id: 'dinner', name: '銀の燭台', short: '銀', place: 'フランス', tip: [0.5, 0.3496], smoke: true },
   { id: 'chamber', name: '手持ちの燭台', short: '手持ち', place: 'イギリス', tip: [0.4972, 0.5461], smoke: true },
   { id: 'rolled', name: '巻いたみつろう', short: 'みつろう', place: 'ドイツ', tip: [0.4958, 0.3688], smoke: true },
   { id: 'dipped', name: '手づくりのみつろう', short: '手づくり', place: 'アメリカ', tip: [0.5, 0.432], smoke: true },
