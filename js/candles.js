@@ -23,7 +23,7 @@ export const CANDLES = [
   { id: 'chianti', name: 'ワインのびん', short: 'ワインのびん', place: 'イタリア', tip: [0.4931, 0.3578], smoke: true },
   { id: 'float', name: '水にうかぶキャンドル', short: '水にうかぶ', place: '韓国', tip: [0.5028, 0.6758], smoke: true },
   { id: 'tealight', name: 'ガラスのティーライト', short: 'ティーライト', place: 'フィリピン', tip: [0.4931, 0.5358], smoke: true },
-  { id: 'shell', name: '貝がらのキャンドル', short: '貝がら', place: 'ギリシャ', tip: [0.5, 0.5], smoke: true },
+  { id: 'shell', name: '貝がらのキャンドル', short: '貝がら', place: 'ギリシャ', tip: [0.4972, 0.6172], smoke: true },
 ];
 
 export const SIZES = [{ id: 's', name: '小', zoom: 0.88 }, { id: 'm', name: '中', zoom: 1.0 }, { id: 'l', name: '大', zoom: 1.18 }];
