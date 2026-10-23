@@ -1,10 +1,10 @@
 'use strict';
 /* 電波がなくても開けるようにする(ホーム画面に入れたあと)。
    - アプリの本体(下の FILES)は、はじめに全部覚える。開くときは まずネットで最新を取りにいき、3秒つながらなければ 覚えているものを出す。
-   - 曲(music/)と文字の形(フォント)は、一度流した・表示したものだけ 覚えておく(10曲ぶん 先に全部はダウンロードしない)。
+   - 曲(music/)・キャンドルの動画と絵(media/)・文字の形(フォント)は、一度流した・表示したものだけ 覚えておく(10曲ぶん 先に全部はダウンロードしない)。
    FILES を変えたときは VERSION を1つ上げる。 */
-const VERSION = 'onecandle-v1';
-const FILES = ['./', 'index.html', 'css/app.css', 'js/app.js', 'js/scene.js', 'js/shader.js', 'js/candles.js', 'js/rooms.js', 'js/music.js', 'manifest.webmanifest', 'music/tracks.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/thumb-pillar.jpg', 'icons/thumb-glow.jpg', 'icons/thumb-hurricane.jpg', 'icons/thumb-taper.jpg', 'icons/thumb-dinner.jpg', 'icons/thumb-chamber.jpg', 'icons/thumb-rolled.jpg', 'icons/thumb-dipped.jpg', 'icons/thumb-twist.jpg', 'icons/thumb-ball.jpg', 'icons/thumb-altar.jpg', 'icons/thumb-tall.jpg', 'icons/thumb-votive.jpg', 'icons/thumb-lykta.jpg', 'icons/thumb-morocco.jpg', 'icons/thumb-woodwick.jpg', 'icons/thumb-threewick.jpg', 'icons/thumb-chianti.jpg', 'icons/thumb-float.jpg', 'icons/thumb-tealight.jpg', 'icons/thumb-s.jpg', 'icons/thumb-m.jpg', 'icons/thumb-l.jpg', 'icons/thumb-yuragi.jpg', 'icons/thumb-cool.jpg', 'icons/thumb-warm.jpg', 'icons/room-hygge.jpg', 'icons/room-winter.jpg', 'icons/room-paris.jpg', 'icons/room-library.jpg', 'icons/room-chapel.jpg', 'icons/room-toscana.jpg', 'icons/room-riad.jpg', 'icons/room-indigo.jpg', 'icons/room-hanok.jpg', 'icons/room-cabin.jpg'];
+const VERSION = 'onecandle-v2';
+const FILES = ['./', 'index.html', 'css/app.css', 'js/app.js', 'js/vscene.js', 'js/candles.js', 'js/music.js', 'manifest.webmanifest', 'music/tracks.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/thumb-pillar.jpg', 'icons/thumb-glow.jpg', 'icons/thumb-hurricane.jpg', 'icons/thumb-taper.jpg', 'icons/thumb-dinner.jpg', 'icons/thumb-chamber.jpg', 'icons/thumb-rolled.jpg', 'icons/thumb-dipped.jpg', 'icons/thumb-twist.jpg', 'icons/thumb-ball.jpg', 'icons/thumb-altar.jpg', 'icons/thumb-tall.jpg', 'icons/thumb-votive.jpg', 'icons/thumb-lykta.jpg', 'icons/thumb-morocco.jpg', 'icons/thumb-woodwick.jpg', 'icons/thumb-threewick.jpg', 'icons/thumb-chianti.jpg', 'icons/thumb-float.jpg', 'icons/thumb-tealight.jpg'];
 const KEEP = 'onecandle-keep';   // 曲とフォント(VERSION を上げても消さない)
 
 self.addEventListener('install', (e) => {
@@ -20,7 +20,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   // フォントと曲: 覚えているものがあれば それを使う
   const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
-  const isMusic = url.origin === location.origin && /\/music\/.+\.(mp3|m4a|aac|ogg|wav)$/i.test(url.pathname);
+  const isMusic = url.origin === location.origin && /\/(music\/.+\.(mp3|m4a|aac|ogg|wav)|media\/[su]\/.+\.jpg|media\/v\/.+\.mp4)$/i.test(url.pathname);
   if (isFont || isMusic) {
     if (req.headers.has('range')) return;   // 曲の途中読みは ふつうにネットへ
     e.respondWith(caches.open(KEEP).then((c) => c.match(req).then((hit) => hit || fetch(req).then((res) => {

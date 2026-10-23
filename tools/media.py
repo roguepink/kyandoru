@@ -21,16 +21,19 @@ COVERED = {"morocco"}                    # 炎が見えない灯り: 煙は出�
 
 def tip_of(lit, unlit, cid):
     L = np.asarray(lit.convert("L"), dtype=np.float32)
-    L[int(L.shape[0] * 0.85):] = 0
+    L[int(L.shape[0] * 0.92):] = 0
     thr = max(200, np.percentile(L, 99.8))
     ys, xs = np.where(L >= thr)
+    # いちばん上の 明るい かたまり = 炎(下にあるのは 台への映り込み)
+    keep = ys <= ys.min() + 0.06 * L.shape[0]
+    ys, xs = ys[keep], xs[keep]
     cx, cy = float(np.median(xs)), float(np.median(ys))
     if cid in COVERED: return cx / L.shape[1], cy / L.shape[0]
     bottom = float(np.percentile(ys, 97))
     return cx / L.shape[1], bottom / L.shape[0]
 
 def main():
-    ids = re.findall(r"id: '([^']+)', name", (ROOT / "js/candles.js").read_text())
+    ids = re.findall(r"id: '([^']+)', name", (ROOT / "js/candles.js").read_text())[:20]
     for d in ("media/v", "media/s", "media/u"): (ROOT / d).mkdir(parents=True, exist_ok=True)
     tips = {}
     for cid in ids:
@@ -38,7 +41,7 @@ def main():
         dur = float(re.search(r"Duration: (\d+):(\d+):([\d.]+)", subprocess.run(["ffmpeg", "-i", str(v)], capture_output=True, text=True).stderr).group(3))
         fc = (f"[0:v]trim={X}:{dur},setpts=PTS-STARTPTS,scale={W}:{H},fps=24,format=yuv420p[a];"
               f"[1:v]trim=0:{X},setpts=PTS-STARTPTS,scale={W}:{H},fps=24,format=yuv420p[b];"
-              f"[a][b]xfade=transition=fade:duration={X}:offset={dur - 2 * X:.3f}[o]")
+              f"[a][b]xfade=transition=fade:duration={X}:offset={dur - 2 * X:.3f},format=yuv420p[o]")
         subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(v), "-i", str(v), "-filter_complex", fc, "-map", "[o]", "-an",
                         "-c:v", "libx264", "-crf", "24", "-preset", "slow", "-profile:v", "main", "-movflags", "+faststart",
                         str(ROOT / f"media/v/{cid}.mp4")], check=True)
