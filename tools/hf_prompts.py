@@ -16,8 +16,8 @@ C = [
   "a weathered farmhouse wooden table", "an American farmhouse: a wall of horizontal painted wooden planks (shiplap) in muted sage, an old wooden ladder shelf with folded linen, a small enamel pitcher."),
  ("taper", "A slim ivory taper candle, 25 cm tall, in an antique polished brass candlestick with turned rings and a drip pan; small points of candlelight reflect on the brass." + FLAME,
   "a polished dark walnut writing desk", "an English library: tall dark wooden bookshelves full of old leather-bound books in oxblood, bottle green, navy and cream, gilt lettering catching the light, a small stack of books and a glass inkwell on the desk."),
- ("dinner", "A tall white dinner candle, 30 cm tall, in an elegant tall silver candlestick with a round base; cool soft reflections on the silver." + FLAME,
-  "a pale grey-veined marble mantelpiece", "a Parisian apartment: a large gilded antique mirror above the mantel faintly reflecting the candle, grey-green painted wall panelling with moldings, a small bronze mantel clock to the left."),
+ ("dinner", "A tall white dinner candle, 30 cm tall, in an elegant tall silver candlestick with a round base; soft matte reflections on the silver." + FLAME,
+  "a pale limestone tabletop", "a French Provencal farmhouse room: a limewashed pale stone wall, a closed rustic wooden window shutter painted faded grey-blue, a stoneware jug with dried lavender, a folded linen napkin. No mirrors, no glass, no other candles (2026-10-24: the first version had a mirror reflecting other things, Nobu asked to avoid mirrors)."),
  ("chamber", "A short white candle, 12 cm tall, in a white enamel chamberstick (a wide round dish with a dark navy rim, a short socket and a ring handle on the side)." + FLAME,
   "a small painted wooden bedside table", "an English cottage bedroom: soft faded small-floral wallpaper, the edge of a white linen pillow and a knitted blanket, an old book lying closed on the table."),
  ("rolled", "A rolled honeycomb beeswax taper candle, 20 cm tall, golden honey color with a clear hexagonal honeycomb texture and a visible spiral seam, in a simple turned wooden candlestick." + FLAME,
@@ -48,6 +48,8 @@ C = [
   "a low dark lacquered Korean wooden table (soban)", "a Korean hanok room: sliding doors of wooden lattice covered with translucent hanji paper, a large white porcelain moon jar on the left, an oiled yellow paper floor."),
  ("tealight", "A small tealight candle in a shiny ribbed aluminum cup, inside a short clear glass holder, 6 cm tall; a small bright flame." + FLAME,
   "a narra hardwood shelf", "a Philippine heritage house: a window of many small translucent capiz shell squares in a dark wooden grid, the night outside, a woven rattan basket."),
+ ("shell", "A whimsical candle made inside a large natural spiral seashell (a big pale cream and soft pink conch-like shell lying on its side, its opening filled with ivory wax), a single cotton wick rising from the wax inside the shell's mouth. The flame is a natural, lively, slightly flickering yellow-orange candle flame with a small blue base and a thin curled black cotton wick; the glossy inner pink of the shell glows warmly from the flame.",
+  "a thick whitewashed stone windowsill", "a Greek island house: a rounded whitewashed plaster wall niche, a small closed wooden window shutter painted soft Aegean blue, a few small smooth pebbles and a tiny clay jug beside. No mirrors, no other candles."),
 ]
 def stills():
     return [(cid, BASE.format(c=c, s=s, r=r)) for cid, c, s, r in C]

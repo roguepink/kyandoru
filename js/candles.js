@@ -1,4 +1,4 @@
-// キャンドルの顔ぶれ(20)。2026-10-24 から Higgsfield で作った 動画・静止画で見せる(作り方は tools/hf_prompts.py と tools/media.py)。
+// キャンドルの顔ぶれ(21)。2026-10-24 にノブさんの希望で「少し奇抜で面白い1本」= 貝がらのキャンドル(ギリシャ)を足した。2026-10-24 から Higgsfield で作った 動画・静止画で見せる(作り方は tools/hf_prompts.py と tools/media.py)。
 // 1つずつ、そのキャンドルに合う「世界の部屋の一角」に置いてある(place)。
 // tip = 芯の先の位置(絵の幅・高さに対する割合。tools/media.py が書く)。煙はここから出る。大きくするときの中心にもなる。
 // smoke = 消したあとに煙を出すか(炎の見えない モロッコのランタンは出さない)
@@ -23,6 +23,7 @@ export const CANDLES = [
   { id: 'chianti', name: 'ワインのびん', short: 'ワインのびん', place: 'イタリア', tip: [0.4931, 0.3578], smoke: true },
   { id: 'float', name: '水にうかぶキャンドル', short: '水にうかぶ', place: '韓国', tip: [0.5028, 0.6758], smoke: true },
   { id: 'tealight', name: 'ガラスのティーライト', short: 'ティーライト', place: 'フィリピン', tip: [0.4931, 0.5358], smoke: true },
+  { id: 'shell', name: '貝がらのキャンドル', short: '貝がら', place: 'ギリシャ', tip: [0.5, 0.5], smoke: true },
 ];
 
 export const SIZES = [{ id: 's', name: '小', zoom: 0.88 }, { id: 'm', name: '中', zoom: 1.0 }, { id: 'l', name: '大', zoom: 1.18 }];

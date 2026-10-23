@@ -33,7 +33,7 @@ def tip_of(lit, unlit, cid):
     return cx / L.shape[1], bottom / L.shape[0]
 
 def main():
-    ids = re.findall(r"id: '([^']+)', name", (ROOT / "js/candles.js").read_text())[:20]
+    ids = re.findall(r"id: '([^']+)', name", (ROOT / "js/candles.js").read_text())[:21]
     for d in ("media/v", "media/s", "media/u"): (ROOT / d).mkdir(parents=True, exist_ok=True)
     tips = {}
     for cid in ids:
