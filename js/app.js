@@ -196,7 +196,8 @@ CANDLES.forEach((c, i) => {
   const b = document.createElement('button');
   b.innerHTML = `<img src="icons/thumb-${c.id}.jpg" alt="" loading="lazy"><span>${c.short}<small>${c.place}</small></span>`;
   b.setAttribute('aria-label', `${c.name}(${c.place})`);
-  b.addEventListener('click', () => changeCandle(i));
+  // 選んだら 板を閉じて、操作もゆっくり消す → キャンドルが 画面いっぱいに やさしく出てくる
+  b.addEventListener('click', () => { changeCandle(i); openSheet(null); hideUI(); });
   thumbs.appendChild(b);
 });
 let switching = 0;
