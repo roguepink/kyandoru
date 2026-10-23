@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<canvas id="scene" aria-hidden="true"></canvas>
+<div id="scene" class="scene" aria-hidden="true"></div>
 
 <!-- はじめの名前(たて書き) -->
 <div id="title" class="title" aria-hidden="true">one candle</div>
@@ -46,11 +46,6 @@
       <p id="swipeNote" class="note small" hidden>左右にはらっても、キャンドルが変わります。</p>
     </section>
 
-    <!-- 部屋を選ぶ -->
-    <section id="room" class="sheet" hidden aria-label="部屋を選ぶ">
-      <h2 class="head">Room <small>へや</small></h2>
-      <div id="rooms" class="rooms"></div>
-    </section>
 
     <!-- おやすみ(タイマー) -->
     <section id="sleep" class="sheet" hidden aria-label="おやすみ">
@@ -71,7 +66,6 @@
     <!-- ととのえる -->
     <section id="adjust" class="sheet" hidden aria-label="あかり">
       <h2 class="head">Light <small>あかり</small></h2>
-      <div class="row"><span class="lab">ゆれ</span><div class="choices" id="swayChoices"></div></div>
       <div class="row"><span class="lab">炎の大きさ</span><div class="choices" id="sizeChoices"></div></div>
       <div class="row"><span class="lab">明るさ</span><div class="choices dots" id="brightChoices"></div></div>
       <div class="row"><span class="lab">色あい</span><div class="choices" id="warmChoices"></div></div>
@@ -88,7 +82,6 @@
 
   <nav id="bar" class="bar" aria-label="操作">
     <button data-open="pick" aria-label="キャンドル"><svg viewBox="0 0 24 24"><path d="M12 3.2c1.5 1.9 2.1 3.2 2.1 4.2a2.1 2.1 0 0 1-4.2 0c0-1 .6-2.3 2.1-4.2Z"/><path d="M8.5 11.5h7v9h-7z"/><path d="M12 9.6v1.9"/></svg><b>Candle</b><span>キャンドル</span></button>
-    <button data-open="room" aria-label="へや"><svg viewBox="0 0 24 24"><path d="M4 20.5V9.5L12 4l8 5.5v11"/><path d="M9.5 20.5v-6h5v6"/><path d="M2.5 20.5h19"/></svg><b>Room</b><span>へや</span></button>
     <button id="musicBtn" data-open="music" aria-label="音楽" hidden><svg viewBox="0 0 24 24"><path d="M9 18.5V6l10-2v12"/><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg><b>Music</b><span id="musicLab">音楽</span></button>
     <button data-open="sleep" aria-label="おやすみ"><svg viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z"/></svg><b>Sleep</b><span id="sleepLab">おやすみ</span></button>
     <button data-open="adjust" aria-label="あかり"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.6"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/></svg><b>Light</b><span>あかり</span></button>
