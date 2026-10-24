@@ -42,6 +42,11 @@
   Suno からの取り出し: ふつうのダウンロードは Chrome が続けての保存を止めるので、画面の中で曲のデータをつかみ、Higgsfield の保存場所へ送って Mac に取りこんだ。
   Suno のダウンロードは月20回まで(Pro)。2026-10-24 に10回使った。
 
+## iPhone で「開けない」(2026-10-24 ノブさん)
+- 原因: iPhone の Safari は、ボタン以外の所をタップしても click を出さないことがある → 「ふれると、灯がともります」から進めなかった。
+- 直し: 灯す・もう一度ともす を pointerup(指を離したとき)で行う(app.js の tapIdle)。#scene に cursor: pointer。click はパソコン用に残し、直後の二重は止める。
+- 確かめ方: Playwright の WebKit + devices["iPhone 13"] で touchscreen.tap → __itto.phase が lit になるか。
+
 ## しくみ
 - ビルドなし。`index.html` + `css/app.css` + `js/`(ES modules)。GitHub Pages でそのまま動く。
 - `js/vscene.js` … 動画で見せる場面(火が消えた静止画 → 炎の動画 → 煙 → 黒い幕)。
