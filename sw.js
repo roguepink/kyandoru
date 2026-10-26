@@ -3,8 +3,8 @@
    - アプリの本体(下の FILES)は、はじめに全部覚える。開くときは まずネットで最新を取りにいき、3秒つながらなければ 覚えているものを出す。
    - 曲(music/)・キャンドルの動画と絵(media/)・文字の形(フォント)は、一度流した・表示したものだけ 覚えておく(10曲ぶん 先に全部はダウンロードしない)。
    FILES を変えたときは VERSION を1つ上げる。 */
-const VERSION = 'onecandle-v5';
-const FILES = ['./', 'index.html', 'css/app.css', 'js/app.js', 'js/vscene.js', 'js/candles.js', 'js/music.js', 'manifest.webmanifest', 'music/tracks.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/thumb-pillar.jpg', 'icons/thumb-glow.jpg', 'icons/thumb-hurricane.jpg', 'icons/thumb-taper.jpg', 'icons/thumb-dinner.jpg', 'icons/thumb-chamber.jpg', 'icons/thumb-rolled.jpg', 'icons/thumb-dipped.jpg', 'icons/thumb-twist.jpg', 'icons/thumb-ball.jpg', 'icons/thumb-altar.jpg', 'icons/thumb-tall.jpg', 'icons/thumb-votive.jpg', 'icons/thumb-lykta.jpg', 'icons/thumb-morocco.jpg', 'icons/thumb-woodwick.jpg', 'icons/thumb-threewick.jpg', 'icons/thumb-chianti.jpg', 'icons/thumb-float.jpg', 'icons/thumb-tealight.jpg', 'icons/thumb-shell.jpg'];
+const VERSION = 'onecandle-v6';
+const FILES = ['./', 'index.html', 'install.js', 'shots/1.jpg', 'shots/2.jpg', 'shots/3.jpg', 'shots/4.jpg', 'css/app.css', 'js/app.js', 'js/vscene.js', 'js/candles.js', 'js/music.js', 'manifest.webmanifest', 'music/tracks.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/thumb-pillar.jpg', 'icons/thumb-glow.jpg', 'icons/thumb-hurricane.jpg', 'icons/thumb-taper.jpg', 'icons/thumb-dinner.jpg', 'icons/thumb-chamber.jpg', 'icons/thumb-rolled.jpg', 'icons/thumb-dipped.jpg', 'icons/thumb-twist.jpg', 'icons/thumb-ball.jpg', 'icons/thumb-altar.jpg', 'icons/thumb-tall.jpg', 'icons/thumb-votive.jpg', 'icons/thumb-lykta.jpg', 'icons/thumb-morocco.jpg', 'icons/thumb-woodwick.jpg', 'icons/thumb-threewick.jpg', 'icons/thumb-chianti.jpg', 'icons/thumb-float.jpg', 'icons/thumb-tealight.jpg', 'icons/thumb-shell.jpg'];
 const KEEP = 'onecandle-keep';   // 曲とフォント(VERSION を上げても消さない)
 
 self.addEventListener('install', (e) => {

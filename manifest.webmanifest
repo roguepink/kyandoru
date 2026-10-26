@@ -1,7 +1,7 @@
 {
   "name": "one candle",
   "short_name": "one candle",
-  "description": "電気を消して、キャンドルをひとつ。世界の部屋に灯して、ながめるだけ。広告なし。",
+  "description": "Turn off the lights and light a single candle. Watch candles glow in rooms around the world, from Denmark and Paris to Morocco. No ads.",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",
@@ -29,5 +29,11 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "screenshots": [
+    { "src": "shots/1.jpg", "sizes": "360x640", "type": "image/jpeg", "form_factor": "narrow", "label": "A pillar candle in Denmark" },
+    { "src": "shots/2.jpg", "sizes": "360x640", "type": "image/jpeg", "form_factor": "narrow", "label": "A Moroccan lantern" },
+    { "src": "shots/3.jpg", "sizes": "360x640", "type": "image/jpeg", "form_factor": "narrow", "label": "A wine bottle candle in Italy" },
+    { "src": "shots/4.jpg", "sizes": "360x640", "type": "image/jpeg", "form_factor": "narrow", "label": "A seashell candle in Greece" }
   ]
 }
